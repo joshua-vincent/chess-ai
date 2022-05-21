@@ -1,3 +1,3 @@
-# neural-networks
+# neural-network
 
-Neural networks for chess engine and board evaluation.
+Neural network for chess engine and board evaluation.
