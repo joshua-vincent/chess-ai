@@ -7,6 +7,7 @@ A set of tools for managing chess game data.
 """
 
 import os
+import time
 import numpy as np
 
 # import re
@@ -29,9 +30,10 @@ TurnInfo contains data regarding side to move, castling, en passant, etc.
 Evaluations are Stockfish 11 positional evaluations in centipawn units.
 """
 def from_file(file, output='test/test.btb'):
+    start_time = time.time()
     file_root, file_ext = os.path.splitext(file)
     
-    if file_ext not ".epd":
+    if file_ext != ".epd":
         # File read must be of format "FEN; SF11'\n'"
         raise TypeError("Can only parse '.edp' files at the moment.")
         
@@ -42,9 +44,13 @@ def from_file(file, output='test/test.btb'):
     
     file_out = open(output, 'w')
     
+    num_lines = 0
     for line in contents:
-        line = line.replace(";", "").split(" ")
+        if len(line) <= 1:
+            break
         
+        line = line.replace(";", "").split(" ")
+            
         board = line[0]
         turn = line[1]
         castling = line[2]
@@ -62,13 +68,41 @@ def from_file(file, output='test/test.btb'):
             }
         
         #TODO add conversion of FEN board position to bitboard
+        # 
+        # FEN -> bitboard
+        # 
+        #
+        #
+        #
+        #
         
         new_line = {
             'board':board,
             'turnInfo':turnInfo,
             'eval':sfEval}
         
-        file_out.write(new_line + '\n')
+        file_out.write(str(new_line) + '\n')
+        num_lines += 1
+    
+    message = \
+        f"""
+        Finished parsing '{file_root + file_ext}'.
+        Parsed {num_lines} positions in {(time.time() - start_time):.2f} sec.
+        """
+    print(message)
     
     file.close()
     file_out.close()
+
+def fen_to_bitboard(fen):
+    # Parses a FEN board position (string fen) into a bitboard representation
+    # Returns (npArray bitboard), 12 x 64 bit long binary position representation
+    # TODO add conversion of FEN board position to bitboard
+    # 
+    # FEN -> bitboard
+    # for element in fen.code
+    # if piece 
+    # mark location at square = element
+    # case number
+    # increment square to next element with piece
+    
